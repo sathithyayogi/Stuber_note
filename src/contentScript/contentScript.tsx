@@ -2,25 +2,16 @@ import React, { memo, useEffect, useState } from "react";
 import * as ReactDOM from 'react-dom';
 // import  './contentscript.css'
 import { zenModeTitle, goBackTitle } from "../constants";
+import {getCurrentYoutubeTimeStamp,generateId,getCurrentTimeStamp,getYoutubeVideoId} from './content.utils'
+import {insertNote} from './content.db'
 
 const ZenMode = () => {
+    const youtubeVideoId = getYoutubeVideoId();
     const [buttonText, setButtonText] = useState<string>(zenModeTitle);
     const [noteTxt, setNoteTxt] = useState<string>("");
     const [placeHolder, setPlaceHolder] = useState<any>();
     var belowContainer = document.getElementById("below");
-    const getTime = t => {
-        var date = new Date(0);
-        date.setSeconds(t);
-        return date.toISOString().substr(11, 8);
-    };
-    const getCurrentYoutubeTimeStamp = () => {
-        // @ts-ignore 
-        const currentTimeStamp = document.getElementsByClassName('video-stream')[0].currentTime;
-        return getTime(currentTimeStamp);
-    };
-    const generateId = () => {
-        return Math.floor(Math.random() * 9000);
-    }
+
     useEffect(() => {
         setInterval(() => {
             // @ts-ignore 
@@ -34,76 +25,14 @@ const ZenMode = () => {
         console.log(noteTxt);
     }, [noteTxt])
 
-    // useEffect(() => {
-
-    //     const params = new URLSearchParams(window.location.search)
-    //     const videoId = params.get("v");
-    //     const request = indexedDB.open("CarsDatabase", 1);
-    //     request.onsuccess = function () {
-    //         const db = request.result;
-    //         const transaction = db.transaction("cars", "readwrite");
-    //         const store = transaction.objectStore("cars");
-    //         console.log("videoId", videoId);
-    //         const idQuery = store.get(videoId);
-    //         console.log("idQuery", idQuery);
-    //         idQuery.onsuccess = function () {
-    //             console.log('new fetch', idQuery?.result.note);
-    //             setNoteTxt(idQuery?.result.note)
-    //         };
-
-    //         transaction.oncomplete = function () {
-    //             db.close();
-    //         };
-
-    //     };
-    // }, [])
 
     function submitNote(e) {
         e.preventDefault();
-        const params = new URLSearchParams(window.location.search)
-        const videoId = params.get("v");
-        const request = indexedDB.open("CarsDatabase", 1);
+        const notePayload = {note:noteTxt, youtubeTimeStamp: getCurrentYoutubeTimeStamp(), genId: generateId(), insertedAt:getCurrentTimeStamp() }
+        insertNote(youtubeVideoId,notePayload);
+        
 
-        request.onupgradeneeded = function () {
-            const db = request.result;
-            const store = db.createObjectStore("cars", { keyPath: "id" });
-            store.createIndex("cars_note", ["note"], { unique: false });
-        };
-
-
-        request.onsuccess = function () {
-
-            const db = request.result;
-
-            // 1
-            const transaction = db.transaction("cars", "readwrite");
-
-            //2
-            const store = transaction.objectStore("cars");
-
-            //3
-            store.put({ id: videoId, note: noteTxt, youtubeTimeStamp: getCurrentYoutubeTimeStamp(), genId: generateId() });
-
-            //4
-            const idQuery = store.get(videoId);
-
-            // 5
-            idQuery.onsuccess = function () {
-                console.log('idQuery', idQuery.result);
-            };
-
-
-            // 6
-            transaction.oncomplete = function () {
-                db.close();
-            };
-
-
-
-        };
-
-
-
+    
     }
 
 
