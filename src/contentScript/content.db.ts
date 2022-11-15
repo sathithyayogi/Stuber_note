@@ -1,7 +1,7 @@
 const databaseName = "CarsDatabase";
 const collectionObjectName = "cars";
-// fetch all note
 
+// fetch all note
 const fetchNote = (youtubeVideoId) =>{
     let youtubeNote = {};
     const request = indexedDB.open(databaseName, 1);
@@ -15,10 +15,8 @@ const fetchNote = (youtubeVideoId) =>{
     transaction.oncomplete = function () {
         db.close();
     };
-
     return youtubeNote;
 }
-
 
 // insert note
 export const insertNote = (youtubeVideoId, payload) =>{
@@ -31,14 +29,9 @@ export const insertNote = (youtubeVideoId, payload) =>{
     };
 
     request.onsuccess = function () {
-
         const db = request.result;
-
-        // 1
         const transaction = db.transaction(collectionObjectName, "readwrite");
-
         const store = transaction.objectStore(collectionObjectName);
-
         store.put({ id: youtubeVideoId, notes:[payload]});
 
 
@@ -48,8 +41,8 @@ export const insertNote = (youtubeVideoId, payload) =>{
         transaction.oncomplete = function () {
             db.close();
         };
-    };
 
+    };
 }
 
 // update note
