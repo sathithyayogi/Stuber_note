@@ -1,40 +1,86 @@
 import React, { memo, useEffect, useState } from "react";
 import * as ReactDOM from 'react-dom';
-// import  './contentscript.css'
 import { zenModeTitle, goBackTitle } from "../constants";
-import {getCurrentYoutubeTimeStamp,generateId,getCurrentTimeStamp,getYoutubeVideoId} from './content.utils'
-import {insertNote} from './content.db'
+import { getCurrentYoutubeTimeStamp, generateId, getCurrentTimeStamp, getYoutubeVideoId } from './content.utils'
+import { insertNoteToDB } from './content.db'
+import InsertNote from "./components/InsertNote";
 
 const ZenMode = () => {
+    const databaseName = "StuberNote";
+    const collectionObjectName = "note";
+
     const youtubeVideoId = getYoutubeVideoId();
     const [buttonText, setButtonText] = useState<string>(zenModeTitle);
-    const [noteTxt, setNoteTxt] = useState<string>("");
+    const [noteArray, setNoteArray] = useState<any>();
     const [placeHolder, setPlaceHolder] = useState<any>();
     var belowContainer = document.getElementById("below");
 
+    const fetchNoteToDB = (youtubeVideoId, payload) => {
+        const request = indexedDB.open(databaseName, 1);
+
+        request.onupgradeneeded = function () {
+            const db = request.result;
+            const store = db.createObjectStore(collectionObjectName, { keyPath: "id" });
+            store.createIndex("cars_note", ["note"], { unique: false });
+        };
+
+        request.onsuccess = function () {
+            var fetchedNote: any;
+            const db = request.result;
+            const transaction = db.transaction(collectionObjectName, "readwrite");
+            const store = transaction.objectStore(collectionObjectName);
+
+            if (payload) {
+                store.put({ id: youtubeVideoId, notes: payload });
+            }
+
+            const idQuery = store.get(youtubeVideoId);
+
+            idQuery.onsuccess = function () {
+                setNoteArray(idQuery?.result);
+
+                return fetchedNote;
+            };
+
+        };
+    }
+
+    useEffect(() => {
+        fetchNoteToDB(youtubeVideoId, null);
+    }, [`${youtubeVideoId}`])
+
     useEffect(() => {
         setInterval(() => {
-            // @ts-ignore 
-            const newT = document.getElementsByClassName('video-stream')[0].currentTime;
             setPlaceHolder(getCurrentYoutubeTimeStamp());
         }, 1000)
     }, [])
 
+
     useEffect(() => {
-        console.log("---------");
-        console.log(noteTxt);
-    }, [noteTxt])
+        setTimeout(() => {
+            var belowContainer = document.getElementById("below");
+            var secondaryContainer = document.getElementById("secondary");
+            setButtonText(goBackTitle);
+            belowContainer.classList.add("new-hide");
+            secondaryContainer.classList.add("new-hide");
+        }, 2500)
+    }, [])
 
-
-    function submitNote(e) {
+    function submitNote(e, value) {
         e.preventDefault();
-        const notePayload = {note:noteTxt, youtubeTimeStamp: getCurrentYoutubeTimeStamp(), genId: generateId(), insertedAt:getCurrentTimeStamp() }
-        insertNote(youtubeVideoId,notePayload);
-        
-
-    
+        if (noteArray) {
+            const newData = JSON.parse(JSON.stringify(noteArray.notes));
+            const notePayload =
+                { note: value, youtubeTimeStamp: getCurrentYoutubeTimeStamp(), genId: generateId(), insertedAt: getCurrentTimeStamp() }
+            newData.unshift(notePayload);
+            insertNoteToDB(youtubeVideoId, newData);
+        } else {
+            const notePayload =
+                [{ note: value, youtubeTimeStamp: getCurrentYoutubeTimeStamp(), genId: generateId(), insertedAt: getCurrentTimeStamp() }]
+            insertNoteToDB(youtubeVideoId, notePayload);
+        }
+        fetchNoteToDB(youtubeVideoId, null);
     }
-
 
     var secondaryContainer = document.getElementById("secondary");
     const zenClick = () => {
@@ -49,46 +95,26 @@ const ZenMode = () => {
         }
     }
 
-    const addNote = (e) => {
-        e.preventDefault();
-        alert(noteTxt);
-    }
-
-    useEffect(() => {
-        setTimeout(() => {
-            var belowContainer = document.getElementById("below");
-            var secondaryContainer = document.getElementById("secondary");
-            belowContainer.classList.add("new-hide");
-            secondaryContainer.classList.add("new-hide");
-        }, 2500)
-    }, [])
 
     return (
         <>
-            <div style={{ display: 'flex', width: '100%', cursor: 'pointer', justifyContent: 'center', backgroundColor: 'red' }}>
+            <div style={{ display: 'flex', width: '100%', cursor: 'pointer', justifyContent: 'flex-end', }}>
                 <h1 onClick={zenClick}>{buttonText}</h1>
             </div>
+            <p>test</p>
 
-            <form onSubmit={(e) => {
-                addNote(e);
-            }}>
-                <div className="mb-4 w-full bg-gray-50 rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600">
-                    <div className="py-2 px-4 bg-white rounded-t-lg dark:bg-gray-800">
-                        <label className="sr-only">Your comment</label>
-
-                        <textarea id="comment" rows={4} defaultValue={noteTxt} onChange={(e) => {
-                            setNoteTxt(e.target.value)
-                        }} className="px-0 w-full text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400" placeholder={" Write your Note at " + placeHolder}></textarea>
-                    </div>
-                    <div className="flex justify-between items-center py-2 px-3 border-t dark:border-gray-600">
-                        <button onClick={(e) => {
-                            submitNote(e);
-                        }} className="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">
-                            Post comment
-                        </button>
-                    </div>
-                </div>
-            </form>
+            <InsertNote firstNote hideCustomization placeHolder={placeHolder} defaultNote={""} submitNote={(e: any, value: string) => {
+                submitNote(e, value);
+            }} />
+            {
+                noteArray?.notes.map((noteData) => {
+                    return (
+                        <InsertNote key={noteData.genId} placeHolder={placeHolder} defaultNote={noteData} submitNote={(e, value: string) => {
+                            alert(value);
+                        }} />
+                    )
+                })
+            }
         </>
     )
 }
