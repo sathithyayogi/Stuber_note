@@ -68,17 +68,37 @@ const ZenMode = () => {
 
     function submitNote(e, value) {
         e.preventDefault();
-        if (noteArray) {
-            const newData = JSON.parse(JSON.stringify(noteArray.notes));
-            const notePayload =
-                { note: value, youtubeTimeStamp: getCurrentYoutubeTimeStamp(), genId: generateId(), insertedAt: getCurrentTimeStamp() }
-            newData.unshift(notePayload);
-            insertNoteToDB(youtubeVideoId, newData);
-        } else {
-            const notePayload =
-                [{ note: value, youtubeTimeStamp: getCurrentYoutubeTimeStamp(), genId: generateId(), insertedAt: getCurrentTimeStamp() }]
-            insertNoteToDB(youtubeVideoId, notePayload);
-        }
+        const newData = JSON.parse(JSON.stringify(noteArray.notes));
+            if (noteArray) {
+                const notePayload =
+                    { note: value, youtubeTimeStamp: getCurrentYoutubeTimeStamp(), genId: generateId(), insertedAt: getCurrentTimeStamp() }
+                newData.unshift(notePayload);
+                insertNoteToDB(youtubeVideoId, newData);
+            } else {
+                const notePayload =
+                    [{ note: value, youtubeTimeStamp: getCurrentYoutubeTimeStamp(), genId: generateId(), insertedAt: getCurrentTimeStamp() }]
+                insertNoteToDB(youtubeVideoId, notePayload);
+            }
+
+        fetchNoteToDB(youtubeVideoId, null);
+    }
+
+    function updateNote(e, value, noteId){
+        e.preventDefault();
+        const newData = JSON.parse(JSON.stringify(noteArray.notes));
+        const noteIndex = newData.findIndex((data)=>data.genId == noteId);
+        newData[noteIndex].note = value;
+        insertNoteToDB(youtubeVideoId, newData);
+        fetchNoteToDB(youtubeVideoId, null);
+
+    }
+
+    function deleteNote(e, noteId){
+        e.preventDefault();
+        const newData = JSON.parse(JSON.stringify(noteArray.notes));
+        const noteIndex = newData.findIndex((data)=>data.genId == noteId);
+        newData.splice(noteIndex,1);
+        insertNoteToDB(youtubeVideoId, newData);
         fetchNoteToDB(youtubeVideoId, null);
     }
 
@@ -109,8 +129,10 @@ const ZenMode = () => {
             {
                 noteArray?.notes.map((noteData) => {
                     return (
-                        <InsertNote key={noteData.genId} placeHolder={placeHolder} defaultNote={noteData} submitNote={(e, value: string) => {
-                            alert(value);
+                        <InsertNote key={noteData.genId} deleteNote={(e,videoId)=>{
+                            deleteNote(e,videoId)
+                        }} placeHolder={placeHolder} defaultNote={noteData} updateNote={(e, value: string,noteId:string) => {
+                            updateNote(e, value,noteId);
                         }} />
                     )
                 })
