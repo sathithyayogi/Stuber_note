@@ -9,5 +9,4 @@ setTimeout(() => {
     document.body.appendChild(appContainer);
     const root = createRoot(appContainer);
     root.render(<ContentScript />);
-}, 2500)
-
+}, 1000)

@@ -55,7 +55,6 @@ const ZenMode = () => {
         }, 1000)
     }, [])
 
-
     useEffect(() => {
         setTimeout(() => {
             var belowContainer = document.getElementById("below");
@@ -63,41 +62,41 @@ const ZenMode = () => {
             setButtonText(goBackTitle);
             belowContainer.classList.add("new-hide");
             secondaryContainer.classList.add("new-hide");
-        }, 2500)
+        }, 1000)
     }, [])
 
     function submitNote(e, value) {
         e.preventDefault();
-        const newData = JSON.parse(JSON.stringify(noteArray.notes));
-            if (noteArray) {
-                const notePayload =
-                    { note: value, youtubeTimeStamp: getCurrentYoutubeTimeStamp(), genId: generateId(), insertedAt: getCurrentTimeStamp() }
-                newData.unshift(notePayload);
-                insertNoteToDB(youtubeVideoId, newData);
-            } else {
-                const notePayload =
-                    [{ note: value, youtubeTimeStamp: getCurrentYoutubeTimeStamp(), genId: generateId(), insertedAt: getCurrentTimeStamp() }]
-                insertNoteToDB(youtubeVideoId, notePayload);
-            }
+        if (noteArray) {
+            const newData = JSON.parse(JSON.stringify(noteArray.notes));
+            const notePayload =
+                { note: value, youtubeTimeStamp: getCurrentYoutubeTimeStamp(), genId: generateId(), insertedAt: getCurrentTimeStamp() }
+            newData.unshift(notePayload);
+            insertNoteToDB(youtubeVideoId, newData);
+        } else {
+            const notePayload =
+                [{ note: value, youtubeTimeStamp: getCurrentYoutubeTimeStamp(), genId: generateId(), insertedAt: getCurrentTimeStamp() }]
+            insertNoteToDB(youtubeVideoId, notePayload);
+        }
 
         fetchNoteToDB(youtubeVideoId, null);
     }
 
-    function updateNote(e, value, noteId){
+    function updateNote(e, value, noteId) {
         e.preventDefault();
         const newData = JSON.parse(JSON.stringify(noteArray.notes));
-        const noteIndex = newData.findIndex((data)=>data.genId == noteId);
+        const noteIndex = newData.findIndex((data) => data.genId == noteId);
         newData[noteIndex].note = value;
         insertNoteToDB(youtubeVideoId, newData);
         fetchNoteToDB(youtubeVideoId, null);
 
     }
 
-    function deleteNote(e, noteId){
+    function deleteNote(e, noteId) {
         e.preventDefault();
         const newData = JSON.parse(JSON.stringify(noteArray.notes));
-        const noteIndex = newData.findIndex((data)=>data.genId == noteId);
-        newData.splice(noteIndex,1);
+        const noteIndex = newData.findIndex((data) => data.genId == noteId);
+        newData.splice(noteIndex, 1);
         insertNoteToDB(youtubeVideoId, newData);
         fetchNoteToDB(youtubeVideoId, null);
     }
@@ -115,13 +114,11 @@ const ZenMode = () => {
         }
     }
 
-
     return (
         <>
             <div style={{ display: 'flex', width: '100%', cursor: 'pointer', justifyContent: 'flex-end', }}>
                 <h1 onClick={zenClick}>{buttonText}</h1>
             </div>
-            <p>test</p>
 
             <InsertNote firstNote hideCustomization placeHolder={placeHolder} defaultNote={""} submitNote={(e: any, value: string) => {
                 submitNote(e, value);
@@ -129,10 +126,10 @@ const ZenMode = () => {
             {
                 noteArray?.notes.map((noteData) => {
                     return (
-                        <InsertNote key={noteData.genId} deleteNote={(e,videoId)=>{
-                            deleteNote(e,videoId)
-                        }} placeHolder={placeHolder} defaultNote={noteData} updateNote={(e, value: string,noteId:string) => {
-                            updateNote(e, value,noteId);
+                        <InsertNote key={noteData.genId} deleteNote={(e, videoId) => {
+                            deleteNote(e, videoId)
+                        }} placeHolder={placeHolder} defaultNote={noteData} updateNote={(e, value: string, noteId: string) => {
+                            updateNote(e, value, noteId);
                         }} />
                     )
                 })
