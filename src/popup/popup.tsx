@@ -3,7 +3,7 @@ import '../assets/tailwind.css'
 import { createRoot } from 'react-dom/client'
 
 const test = (
-    <h1 className="text-3xl text-green-500 font-bold underline">
+    <h1 className="">
         Hello world!
     </h1>
 )

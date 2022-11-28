@@ -13,6 +13,8 @@ const ZenMode = () => {
     const [buttonText, setButtonText] = useState<string>(zenModeTitle);
     const [noteArray, setNoteArray] = useState<any>();
     const [placeHolder, setPlaceHolder] = useState<any>();
+    
+    
     var belowContainer = document.getElementById("below");
 
     const fetchNoteToDB = (youtubeVideoId, payload) => {
@@ -116,7 +118,7 @@ const ZenMode = () => {
 
     return (
         <>
-            <div style={{ display: 'flex', width: '100%', cursor: 'pointer', justifyContent: 'flex-end', }}>
+            <div style={{display:'flex',justifyContent:'flex-end', marginTop:'10px'}}>
                 <h1 onClick={zenClick}>{buttonText}</h1>
             </div>
 

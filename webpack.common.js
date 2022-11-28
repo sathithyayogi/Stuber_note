@@ -2,7 +2,6 @@ const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 const HtmlPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const tailwindcss = require('tailwindcss')
 const autoprefixer = require('autoprefixer')
 
 module.exports = {
@@ -28,16 +27,7 @@ module.exports = {
                         options: {
                           importLoaders: 1,
                         },
-                    },
-                    {
-                    loader: 'postcss-loader', // postcss loader needed for tailwindcss
-                    options: {
-                      postcssOptions: {
-                        ident: 'postcss',
-                        plugins: [tailwindcss, autoprefixer],
-                      },
-                    },
-                },
+                    }
               ],
             },
             {
