@@ -57,6 +57,9 @@ const ZenMode = () => {
         }, 1000)
     }, [])
 
+    
+
+
     useEffect(() => {
         setTimeout(() => {
             var belowContainer = document.getElementById("below");

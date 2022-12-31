@@ -18,7 +18,14 @@ const InsertNote = ({ submitNote, updateNote, deleteNote, defaultNote, placeHold
     const [editNote, showEditNote] = useState<boolean>(false);
     // @ts-ignore 
     const youtubeVideTitle = document.querySelector('meta[name="title"]').content;
-    console.log("youtubeVideTitle", youtubeVideTitle)
+    console.log("youtubeVideTitle", youtubeVideTitle);
+
+    chrome.runtime.onMessage.addListener((obj, sender, response) => {
+        const { type, value, videoId } = obj;
+    
+        alert('Calling from ');
+      });
+
     return (
         <form>
 
