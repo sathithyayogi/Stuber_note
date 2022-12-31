@@ -86,11 +86,15 @@ const ZenMode = () => {
 
     function updateNote(e, value, noteId) {
         e.preventDefault();
-        const newData = JSON.parse(JSON.stringify(noteArray.notes));
-        const noteIndex = newData.findIndex((data) => data.genId == noteId);
-        newData[noteIndex].note = value;
-        insertNoteToDB(youtubeVideoId, newData);
-        fetchNoteToDB(youtubeVideoId, null);
+        if (value.length == 0) {
+            alert('Note SHould not Empty');
+        }else{   
+            const newData = JSON.parse(JSON.stringify(noteArray.notes));
+            const noteIndex = newData.findIndex((data) => data.genId == noteId);
+            newData[noteIndex].note = value;
+            insertNoteToDB(youtubeVideoId, newData);
+            fetchNoteToDB(youtubeVideoId, null);
+        }
 
     }
 
