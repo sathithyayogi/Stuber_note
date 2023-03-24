@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Badge from 'react-bootstrap/Badge';
@@ -16,15 +16,15 @@ type IInsertNote = {
 const InsertNote = ({ submitNote, updateNote, deleteNote, defaultNote, placeHolder, hideCustomization = false, firstNote = false }: IInsertNote) => {
     const [tmpNote, setTmpNote] = useState<string>("");
     const [editNote, showEditNote] = useState<boolean>(false);
-    // @ts-ignore 
-    const youtubeVideTitle = document.querySelector('meta[name="title"]').content;
-    console.log("youtubeVideTitle", youtubeVideTitle);
+    const [videoTitle, setVideoTitle] = useState('');
 
-    chrome.runtime.onMessage.addListener((obj, sender, response) => {
-        const { type, value, videoId } = obj;
-    
-        alert('Calling from ');
-      });
+
+    useEffect(() => {
+        setInterval(() => {
+            const youtubeVideTitle = document.title;
+            setVideoTitle(youtubeVideTitle)
+        }, 1000)
+    }, [])
 
     return (
         <form>
@@ -35,7 +35,7 @@ const InsertNote = ({ submitNote, updateNote, deleteNote, defaultNote, placeHold
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
 
-                            <p style={{ fontSize: '18px', fontWeight: 'bold' }}> {youtubeVideTitle}</p>
+                            <p style={{ fontSize: '18px', fontWeight: 'bold' }}> {videoTitle}</p>
                         </div>
                     </div>
                     <Form.Control
@@ -80,7 +80,7 @@ const InsertNote = ({ submitNote, updateNote, deleteNote, defaultNote, placeHold
                 <>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
                         <div className="">
-                        <Badge style={{}} bg="primary">{defaultNote.youtubeTimeStamp}</Badge>{' '}
+                            <Badge style={{}} bg="primary">{defaultNote.youtubeTimeStamp}</Badge>{' '}
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                             <svg onClick={(e) => {
@@ -106,7 +106,7 @@ const InsertNote = ({ submitNote, updateNote, deleteNote, defaultNote, placeHold
                 (!editNote && !firstNote) &&
                 <>
 
-                    <div style={{ backgroundColor: '#f8f9fa', padding: '10px', marginBottom: '10px',marginTop:'10px' }}>
+                    <div style={{ backgroundColor: '#f8f9fa', padding: '10px', marginBottom: '10px', marginTop: '10px' }}>
                         <h5>{defaultNote.note}</h5>
                     </div>
                 </>
