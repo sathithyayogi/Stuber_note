@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Badge from 'react-bootstrap/Badge';
@@ -14,6 +14,7 @@ type IInsertNote = {
 }
 
 const InsertNote = ({ submitNote, updateNote, deleteNote, defaultNote, placeHolder, hideCustomization = false, firstNote = false }: IInsertNote) => {
+    const formRef = useRef();
     const [tmpNote, setTmpNote] = useState<string>("");
     const [editNote, showEditNote] = useState<boolean>(false);
     const [videoTitle, setVideoTitle] = useState('');
@@ -27,7 +28,7 @@ const InsertNote = ({ submitNote, updateNote, deleteNote, defaultNote, placeHold
     }, [])
 
     return (
-        <form>
+        <form ref={formRef}>
 
             {
                 (editNote || firstNote) &&
@@ -63,6 +64,8 @@ const InsertNote = ({ submitNote, updateNote, deleteNote, defaultNote, placeHold
                         <Button
                             onClick={(e) => {
                                 if (firstNote) {
+                                    // @ts-ignore
+                                    formRef?.current.reset();
                                     submitNote(e, tmpNote);
                                 } else {
                                     updateNote(e, tmpNote, defaultNote?.genId);
@@ -70,7 +73,7 @@ const InsertNote = ({ submitNote, updateNote, deleteNote, defaultNote, placeHold
                                 }
                             }}
                             variant="primary" size="sm">
-                            {firstNote ? "Post Comment" : "Update Comment"}
+                            {firstNote ? "Add Comment" : "Edit Comment"}
                         </Button>
                     </div>
                 </>
