@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Badge from 'react-bootstrap/Badge';
+import { playerSelectClassName } from '../../constants';
 
 type IInsertNote = {
     submitNote?: (e: any, noteTxt: string) => void;
@@ -39,13 +40,17 @@ const InsertNote = ({ submitNote, updateNote, deleteNote, defaultNote, placeHold
                         </div>
                     </div>
                     <Form.Control
+                        onFocusCapture={() => {
+                            // @ts-ignore
+                            document.getElementsByClassName(playerSelectClassName)[0].pause()
+                        }}
                         id="comment"
                         onChange={(e) => {
                             setTmpNote(e.target.value)
                         }}
                         defaultValue={defaultNote.note}
                         as="textarea"
-                        placeholder={" Write your Note at " + placeHolder}
+                        placeholder={placeHolder ? "Write your Note at " + placeHolder : 'Write your Note Here!'}
                         style={{ height: '100px' }}
                     />
                     <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '5px' }}>

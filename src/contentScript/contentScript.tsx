@@ -1,11 +1,13 @@
 import React, { memo, useEffect, useState } from "react";
 import * as ReactDOM from 'react-dom';
-import { zenModeTitle, goBackTitle, rightSideClassName, bottomSideClassName, databaseName, collectionObjectName, emptyErrorMessage, hideClassName } from "../constants";
+import { zenModeTitle, goBackTitle, rightSideClassName, bottomSideClassName, databaseName, collectionObjectName, emptyErrorMessage, hideClassName, playerSelectClassName } from "../constants";
 import { getCurrentYoutubeTimeStamp, generateId, getCurrentTimeStamp, getYoutubeVideoId } from './content.utils'
 import { insertNoteToDB } from './content.db'
 import InsertNote from "./components/InsertNote";
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import '../assets/tailwind.css';
+
+import ConfettiGenerator from "confetti-js";
 
 const ZenMode = () => {
 
@@ -70,7 +72,7 @@ const ZenMode = () => {
 
     function submitNote(e, value) {
         e.preventDefault();
-        if(value.length == 0){
+        if(value.length == 0) {
             alert(emptyErrorMessage);
             return;
         }
@@ -86,6 +88,8 @@ const ZenMode = () => {
             insertNoteToDB(youtubeVideoId, notePayload);
         }
 
+        // @ts-ignore
+        document.getElementsByClassName(playerSelectClassName)[0].play()
         fetchNoteToDB(youtubeVideoId, null);
     }
 
@@ -100,6 +104,8 @@ const ZenMode = () => {
         newData[noteIndex].note = value;
         insertNoteToDB(youtubeVideoId, newData);
         fetchNoteToDB(youtubeVideoId, null);
+        // @ts-ignore
+        document.getElementsByClassName(playerSelectClassName)[0].play()
     }
 
     function deleteNote(e, noteId) {
