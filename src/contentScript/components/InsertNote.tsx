@@ -51,7 +51,10 @@ const InsertNote = ({ submitNote, updateNote, deleteNote, defaultNote, placeHold
                         defaultValue={defaultNote.note}
                         as="textarea"
                         placeholder={placeHolder ? "Write your Note at " + placeHolder : 'Write your Note Here!'}
-                        style={{ height: '100px' }}
+                        style={{ 
+                        height: '100px',
+                        width:'100%'
+                    }}
                     />
                     <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '5px' }}>
                         {
