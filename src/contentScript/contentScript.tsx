@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom';
 import { bottomSideClassName, collectionObjectName, databaseName, emptyErrorMessage, goBackTitle, hideClassName, playerSelectClassName, rightSideClassName, zenModeTitle } from "../constants";
 import InsertNote from "./components/InsertNote";
 import { insertNoteToDB } from './content.db';
-import { generateId, getCurrentTimeStamp, getCurrentYoutubeTimeStamp, getYoutubeURL, getYoutubeVideoId } from './content.utils';
+import { generateId, getCurrentTimeStamp, getCurrentYoutubeTimeStamp, getYoutubeURL, getYoutubeVideoId, playYoutubeVideo } from './content.utils';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import '../assets/tailwind.css';
 
@@ -83,8 +83,7 @@ const ZenMode = () => {
             insertNoteToDB(youtubeVideoId, [notePayload]);
         }
 
-        // @ts-ignore
-        document.getElementsByClassName(playerSelectClassName)[0].play()
+        playYoutubeVideo();
         fetchNoteToDB(youtubeVideoId, null);
     }
 
@@ -99,8 +98,7 @@ const ZenMode = () => {
         newData[noteIndex].note = value;
         insertNoteToDB(youtubeVideoId, newData);
         fetchNoteToDB(youtubeVideoId, null);
-        // @ts-ignore
-        document.getElementsByClassName(playerSelectClassName)[0].play()
+        playYoutubeVideo();
     }
 
     function deleteNote(e, noteId) {
@@ -139,6 +137,11 @@ const ZenMode = () => {
                 <h1 onClick={zenClick}>{buttonText}</h1>
             </div>
 
+
+            <InsertNote firstNote hideCustomization placeHolder={placeHolder} defaultNote={""} submitNote={(e: any, value: string) => {
+                submitNote(e, value);
+            }} />
+            
             {
                 noteArray?.notes.map((noteData) => {
                     return (
@@ -150,11 +153,6 @@ const ZenMode = () => {
                     )
                 })
             }
-
-            <InsertNote firstNote hideCustomization placeHolder={placeHolder} defaultNote={""} submitNote={(e: any, value: string) => {
-                submitNote(e, value);
-            }} />
-            
        
         </>
     )

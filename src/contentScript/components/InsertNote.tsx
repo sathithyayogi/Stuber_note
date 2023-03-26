@@ -3,6 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Badge from 'react-bootstrap/Badge';
 import { playerSelectClassName } from '../../constants';
+import { pauseYoutubeVideo, playAtParticularTimeStamp } from '../content.utils';
 
 type IInsertNote = {
     submitNote?: (e: any, noteTxt: string) => void;
@@ -41,8 +42,7 @@ const InsertNote = ({ submitNote, updateNote, deleteNote, defaultNote, placeHold
                     </div>
                     <Form.Control
                         onFocusCapture={() => {
-                            // @ts-ignore
-                            document.getElementsByClassName(playerSelectClassName)[0].pause()
+                            pauseYoutubeVideo();
                         }}
                         id="comment"
                         onChange={(e) => {
@@ -89,7 +89,9 @@ const InsertNote = ({ submitNote, updateNote, deleteNote, defaultNote, placeHold
                 !hideCustomization &&
                 <>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
-                        <div className="">
+                        <div className="" onClick={()=>{
+                            playAtParticularTimeStamp(defaultNote.youtubeTimeStamp);
+                        }}>
                             <Badge style={{}} bg="primary">{defaultNote.youtubeTimeStamp}</Badge>{' '}
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
