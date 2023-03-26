@@ -36,7 +36,7 @@ const InsertNote = ({ submitNote, updateNote, deleteNote, defaultNote, placeHold
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
 
-                            <p style={{ fontSize: '18px', fontWeight: 'bold' }}> {videoTitle}</p>
+                            {/* <p style={{ fontSize: '18px', fontWeight: 'bold' }}> {videoTitle}</p> */}
                         </div>
                     </div>
                     <Form.Control

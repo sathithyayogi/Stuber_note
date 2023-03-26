@@ -1,21 +1,18 @@
-import React, { memo, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as ReactDOM from 'react-dom';
-import { zenModeTitle, goBackTitle, rightSideClassName, bottomSideClassName, databaseName, collectionObjectName, emptyErrorMessage, hideClassName, playerSelectClassName } from "../constants";
-import { getCurrentYoutubeTimeStamp, generateId, getCurrentTimeStamp, getYoutubeVideoId } from './content.utils'
-import { insertNoteToDB } from './content.db'
+import { bottomSideClassName, collectionObjectName, databaseName, emptyErrorMessage, goBackTitle, hideClassName, playerSelectClassName, rightSideClassName, zenModeTitle } from "../constants";
 import InsertNote from "./components/InsertNote";
+import { insertNoteToDB } from './content.db';
+import { generateId, getCurrentTimeStamp, getCurrentYoutubeTimeStamp, getYoutubeURL, getYoutubeVideoId } from './content.utils';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import '../assets/tailwind.css';
 
-import ConfettiGenerator from "confetti-js";
-
 const ZenMode = () => {
-
-
     const youtubeVideoId = getYoutubeVideoId();
     const [buttonText, setButtonText] = useState<string>(zenModeTitle);
     const [noteArray, setNoteArray] = useState<any>();
     const [placeHolder, setPlaceHolder] = useState<any>();
+    const [videoTitle, setVideoTitle] = useState('');
 
 
     var belowContainer = document.getElementById(bottomSideClassName);
@@ -76,16 +73,14 @@ const ZenMode = () => {
             alert(emptyErrorMessage);
             return;
         }
+
+        const notePayload = { note: value, youtubeTimeStamp: getCurrentYoutubeTimeStamp(), genId: generateId(), insertedAt: getCurrentTimeStamp(), youtubeURL: getYoutubeURL() }
         if (noteArray) {
             const newData = JSON.parse(JSON.stringify(noteArray.notes));
-            const notePayload =
-                { note: value, youtubeTimeStamp: getCurrentYoutubeTimeStamp(), genId: generateId(), insertedAt: getCurrentTimeStamp() }
             newData.unshift(notePayload);
             insertNoteToDB(youtubeVideoId, newData);
         } else {
-            const notePayload =
-                [{ note: value, youtubeTimeStamp: getCurrentYoutubeTimeStamp(), genId: generateId(), insertedAt: getCurrentTimeStamp() }]
-            insertNoteToDB(youtubeVideoId, notePayload);
+            insertNoteToDB(youtubeVideoId, [notePayload]);
         }
 
         // @ts-ignore
@@ -130,15 +125,20 @@ const ZenMode = () => {
         }
     }
 
+    useEffect(() => {
+        setInterval(() => {
+            const youtubeVideTitle = document.title;
+            setVideoTitle(youtubeVideTitle)
+        }, 1000)
+    }, [])
+
     return (
         <>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
+                <h1>{videoTitle}</h1>
                 <h1 onClick={zenClick}>{buttonText}</h1>
             </div>
 
-            <InsertNote firstNote hideCustomization placeHolder={placeHolder} defaultNote={""} submitNote={(e: any, value: string) => {
-                submitNote(e, value);
-            }} />
             {
                 noteArray?.notes.map((noteData) => {
                     return (
@@ -150,6 +150,12 @@ const ZenMode = () => {
                     )
                 })
             }
+
+            <InsertNote firstNote hideCustomization placeHolder={placeHolder} defaultNote={""} submitNote={(e: any, value: string) => {
+                submitNote(e, value);
+            }} />
+            
+       
         </>
     )
 }
@@ -157,4 +163,5 @@ const ZenMode = () => {
 const contentScript = () => {
     return ReactDOM.createPortal(<ZenMode />, document.getElementById("player"));
 }
+
 export default contentScript;

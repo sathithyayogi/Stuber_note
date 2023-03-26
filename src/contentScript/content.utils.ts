@@ -23,3 +23,7 @@ export const getYoutubeVideoId = () => {
     return  params.get("v");
 }
 
+export const getYoutubeURL = () =>{
+    const youtubeURL = `https://www.youtube.com/watch?v=${getYoutubeVideoId()}`;
+    return youtubeURL;
+}
