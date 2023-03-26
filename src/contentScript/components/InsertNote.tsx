@@ -29,7 +29,6 @@ const InsertNote = ({ submitNote, updateNote, deleteNote, defaultNote, placeHold
 
     return (
         <form ref={formRef}>
-
             {
                 (editNote || firstNote) &&
                 <>

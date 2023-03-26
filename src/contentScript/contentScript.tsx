@@ -1,21 +1,22 @@
 import React, { memo, useEffect, useState } from "react";
 import * as ReactDOM from 'react-dom';
-import { zenModeTitle, goBackTitle } from "../constants";
+import { zenModeTitle, goBackTitle, rightSideClassName, bottomSideClassName, databaseName, collectionObjectName, emptyErrorMessage, hideClassName } from "../constants";
 import { getCurrentYoutubeTimeStamp, generateId, getCurrentTimeStamp, getYoutubeVideoId } from './content.utils'
 import { insertNoteToDB } from './content.db'
 import InsertNote from "./components/InsertNote";
+// import 'bootstrap/dist/css/bootstrap.min.css';
+import '../assets/tailwind.css';
 
 const ZenMode = () => {
-    const databaseName = "StuberNote";
-    const collectionObjectName = "note";
+
 
     const youtubeVideoId = getYoutubeVideoId();
     const [buttonText, setButtonText] = useState<string>(zenModeTitle);
     const [noteArray, setNoteArray] = useState<any>();
     const [placeHolder, setPlaceHolder] = useState<any>();
-    
-    
-    var belowContainer = document.getElementById("below");
+
+
+    var belowContainer = document.getElementById(bottomSideClassName);
 
     const fetchNoteToDB = (youtubeVideoId, payload) => {
         const request = indexedDB.open(databaseName, 1);
@@ -57,21 +58,22 @@ const ZenMode = () => {
         }, 1000)
     }, [])
 
-    
-
-
     useEffect(() => {
         setTimeout(() => {
-            var belowContainer = document.getElementById("below");
-            var secondaryContainer = document.getElementById("secondary");
+            var belowContainer = document.getElementById(bottomSideClassName);
+            var secondaryContainer = document.getElementById(rightSideClassName);
             setButtonText(goBackTitle);
-            belowContainer.classList.add("new-hide");
-            secondaryContainer.classList.add("new-hide");
+            belowContainer.classList.add(hideClassName);
+            secondaryContainer.classList.add(hideClassName);
         }, 1000)
     }, [])
 
     function submitNote(e, value) {
         e.preventDefault();
+        if(value.length == 0){
+            alert(emptyErrorMessage);
+            return;
+        }
         if (noteArray) {
             const newData = JSON.parse(JSON.stringify(noteArray.notes));
             const notePayload =
@@ -90,15 +92,14 @@ const ZenMode = () => {
     function updateNote(e, value, noteId) {
         e.preventDefault();
         if (value.length == 0) {
-            alert('Note SHould not Empty');
-        }else{   
-            const newData = JSON.parse(JSON.stringify(noteArray.notes));
-            const noteIndex = newData.findIndex((data) => data.genId == noteId);
-            newData[noteIndex].note = value;
-            insertNoteToDB(youtubeVideoId, newData);
-            fetchNoteToDB(youtubeVideoId, null);
+            alert(emptyErrorMessage);
+            return;
         }
-
+        const newData = JSON.parse(JSON.stringify(noteArray.notes));
+        const noteIndex = newData.findIndex((data) => data.genId == noteId);
+        newData[noteIndex].note = value;
+        insertNoteToDB(youtubeVideoId, newData);
+        fetchNoteToDB(youtubeVideoId, null);
     }
 
     function deleteNote(e, noteId) {
@@ -110,22 +111,22 @@ const ZenMode = () => {
         fetchNoteToDB(youtubeVideoId, null);
     }
 
-    var secondaryContainer = document.getElementById("secondary");
+    var secondaryContainer = document.getElementById(rightSideClassName);
     const zenClick = () => {
         if (buttonText === zenModeTitle) {
             setButtonText(goBackTitle);
-            belowContainer.classList.add("new-hide");
-            secondaryContainer.classList.add("new-hide");
+            belowContainer.classList.add(hideClassName);
+            secondaryContainer.classList.add(hideClassName);
         } else if (buttonText === goBackTitle) {
             setButtonText(zenModeTitle);
-            belowContainer.classList.remove("new-hide");
-            secondaryContainer.classList.remove("new-hide");
+            belowContainer.classList.remove(hideClassName);
+            secondaryContainer.classList.remove(hideClassName);
         }
     }
 
     return (
         <>
-            <div style={{display:'flex',justifyContent:'flex-end', marginTop:'10px'}}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
                 <h1 onClick={zenClick}>{buttonText}</h1>
             </div>
 
@@ -148,6 +149,6 @@ const ZenMode = () => {
 }
 
 const contentScript = () => {
-    return ReactDOM.createPortal(<ZenMode />, document.getElementById("primary"));
+    return ReactDOM.createPortal(<ZenMode />, document.getElementById("player"));
 }
 export default contentScript;
